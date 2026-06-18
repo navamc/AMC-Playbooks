@@ -10,12 +10,12 @@
         $Since = (Get-Date).AddHours(-24)
 
         Get-WinEvent -FilterHashtable @{
-          LogName='System'
-          StartTime=$Since
+            LogName='System'
+            StartTime=$Since
         } |
         Where-Object {
-          $_.LevelDisplayName -in @('Critical','Error') -and
-          $_.Id -notin @(10016,36888,36874)
+            $_.LevelDisplayName -in @('Critical','Error') -and
+            $_.Id -notin @(10016,36888,36874)
         } |
         Select-Object TimeCreated,
                       Id,
