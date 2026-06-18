@@ -1,0 +1,13 @@
+---
+- name: Setup test
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Collect setup facts
+      ansible.windows.setup:
+      register: setupfacts
+
+    - debug:
+        var: setupfacts
