@@ -1,0 +1,37 @@
+---
+- name: Auto Restart Critical Services
+  hosts: windows
+  gather_facts: no
+
+  vars:
+    critical_services:
+      - WinRM
+      - W32Time
+      - Schedule
+      - LanmanServer
+
+  tasks:
+
+    - name: Get service information
+      ansible.windows.win_service_info:
+        name: "{{ item }}"
+      loop: "{{ critical_services }}"
+      register: service_info
+
+    - name: Start stopped services
+      ansible.windows.win_service:
+        name: "{{ item.services[0].name }}"
+        state: started
+      when:
+        - item.exists
+        - item.services[0].state != "running"
+      loop: "{{ service_info.results }}"
+      register: restarted_services
+
+    - name: Display service status
+      debug:
+        msg: >
+          Service {{ item.services[0].display_name }}
+          is {{ item.services[0].state }}
+      when: item.exists
+      loop: "{{ service_info.results }}"
