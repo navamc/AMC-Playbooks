@@ -1,0 +1,9 @@
+---
+- name: Test Windows Connectivity
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Ping Windows hosts
+      ansible.windows.win_ping:
