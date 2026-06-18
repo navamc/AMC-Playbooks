@@ -1,0 +1,30 @@
+---
+- name: Critical Event Log Report
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get critical events from last 24 hours
+      ansible.windows.win_shell: |
+        $Since = (Get-Date).AddHours(-24)
+
+        Get-WinEvent -FilterHashtable @{
+          LogName='System'
+          StartTime=$Since
+        } |
+        Where-Object {
+          $_.LevelDisplayName -in @('Critical','Error') -and
+          $_.Id -notin @(10016,36888,36874)
+        } |
+        Select-Object TimeCreated,
+                      Id,
+                      LevelDisplayName,
+                      ProviderName,
+                      Message |
+        ConvertTo-Json -Depth 3
+      register: critical_events
+
+    - name: Display critical events
+      debug:
+        var: critical_events.stdout
