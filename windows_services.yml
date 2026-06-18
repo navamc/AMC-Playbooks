@@ -1,0 +1,20 @@
+---
+- name: Windows Services Report
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Check important services
+      ansible.windows.win_shell: |
+        Get-Service |
+        Where-Object {
+            $_.DisplayName -match "DNS|DHCP|Backup Exec|SQL|IIS|Hyper-V"
+        } |
+        Select-Object DisplayName, Status, StartType |
+        ConvertTo-Json
+      register: services
+
+    - name: Display services
+      debug:
+        var: services.stdout
