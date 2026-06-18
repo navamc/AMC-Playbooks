@@ -1,0 +1,30 @@
+---
+- name: Collect Windows Information
+  hosts: windows
+  gather_facts: yes
+
+  tasks:
+
+    - name: Show hostname
+      debug:
+        var: ansible_hostname
+
+    - name: Show Windows version
+      debug:
+        var: ansible_distribution
+
+    - name: Show IP addresses
+      debug:
+        var: ansible_ip_addresses
+
+    - name: Show Total RAM
+      debug:
+        var: ansible_memtotal_mb
+
+    - name: Show Processor
+      debug:
+        var: ansible_processor
+
+    - name: Show Domain Name
+      debug:
+        var: ansible_domain
