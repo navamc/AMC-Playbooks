@@ -1,0 +1,30 @@
+---
+- name: Critical Windows Services
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get critical services
+      ansible.windows.win_shell: |
+        $Services = @(
+            "DNS",
+            "DHCPServer",
+            "WinRM",
+            "W32Time",
+            "LanmanServer",
+            "vmms",
+            "W3SVC",
+            "Schedule"
+        )
+
+        Get-Service -Name $Services -ErrorAction SilentlyContinue |
+        Select-Object Name,DisplayName,
+          @{Name="Status";Expression={$_.Status.ToString()}},
+          @{Name="StartType";Expression={$_.StartType.ToString()}} |
+        ConvertTo-Json
+      register: critical_services
+
+    - name: Display critical services
+      debug:
+        var: critical_services.stdout
