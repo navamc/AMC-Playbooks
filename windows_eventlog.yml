@@ -1,0 +1,22 @@
+---
+- name: Windows Event Log Report
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get latest Errors and Warnings from System Log
+      ansible.windows.win_shell: |
+        Get-WinEvent -LogName System -MaxEvents 20 |
+        Where-Object {$_.LevelDisplayName -in @("Error","Warning")} |
+        Select-Object TimeCreated,
+                      Id,
+                      LevelDisplayName,
+                      ProviderName,
+                      Message |
+        ConvertTo-Json -Depth 3
+      register: system_events
+
+    - name: Display System Events
+      debug:
+        var: system_events.stdout
