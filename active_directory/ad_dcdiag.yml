@@ -1,0 +1,15 @@
+---
+- name: Active Directory Domain Controller Diagnostic
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Run DCDIAG
+      ansible.windows.win_shell: |
+        dcdiag /q
+      register: dcdiag
+
+    - name: Display DCDIAG Result
+      debug:
+        var: dcdiag.stdout
