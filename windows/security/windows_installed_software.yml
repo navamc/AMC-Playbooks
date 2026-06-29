@@ -1,0 +1,33 @@
+---
+- name: Windows Installed Software Inventory
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get installed software
+      ansible.windows.win_shell: |
+
+        Get-ItemProperty `
+          HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*,
+
+          HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+
+        Where-Object {
+            $_.DisplayName
+        } |
+
+        Sort-Object DisplayName |
+
+        Select-Object `
+            DisplayName,
+            DisplayVersion,
+            Publisher |
+
+        ConvertTo-Json
+
+      register: software
+
+    - name: Display installed software
+      debug:
+        var: software.stdout
