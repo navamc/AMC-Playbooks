@@ -1,0 +1,23 @@
+---
+- name: Windows Uptime Report
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get last boot time
+      ansible.windows.win_shell: |
+        (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
+      register: boot
+
+    - name: Get uptime in days
+      ansible.windows.win_shell: |
+        [math]::Round(((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalDays,2)
+      register: uptime
+
+    - name: Display server uptime
+      debug:
+        msg:
+          - "Server: {{ inventory_hostname }}"
+          - "Last Boot: {{ boot.stdout }}"
+          - "Uptime (Days): {{ uptime.stdout }}"
