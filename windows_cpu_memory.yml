@@ -1,0 +1,37 @@
+---
+- name: Windows CPU and Memory Health
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get CPU Usage
+      ansible.windows.win_shell: |
+        (Get-CimInstance Win32_Processor |
+        Measure-Object -Property LoadPercentage -Average).Average
+      register: cpu
+
+    - name: Get Memory Information
+      ansible.windows.win_shell: |
+        $OS = Get-CimInstance Win32_OperatingSystem
+
+        $Total = [math]::Round($OS.TotalVisibleMemorySize / 1MB,2)
+        $Free = [math]::Round($OS.FreePhysicalMemory / 1MB,2)
+        $Used = [math]::Round($Total - $Free,2)
+        $Percent = [math]::Round(($Used / $Total) * 100,2)
+
+        [PSCustomObject]@{
+            TotalGB = $Total
+            UsedGB = $Used
+            FreeGB = $Free
+            UsedPercent = $Percent
+        } | ConvertTo-Json
+      register: memory
+
+    - name: Display CPU Usage
+      debug:
+        msg: "CPU Usage: {{ cpu.stdout }} %"
+
+    - name: Display Memory Information
+      debug:
+        var: memory.stdout
