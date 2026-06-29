@@ -1,19 +1,33 @@
 ---
-- name: Windows Local Administrators Audit
+- name: Windows Administrators Audit
   hosts: windows
   gather_facts: no
 
   tasks:
 
-    - name: Get Local Administrators Group Members
+    - name: Get Administrators
       ansible.windows.win_shell: |
 
-        Get-LocalGroupMember -Group "Administrators" |
-        Select-Object Name,ObjectClass,PrincipalSource |
-        ConvertTo-Json
+        $cs = Get-CimInstance Win32_ComputerSystem
+
+        if ($cs.DomainRole -ge 4)
+        {
+            Write-Host "===== DOMAIN CONTROLLER ====="
+
+            Get-ADGroupMember "Domain Admins" |
+            Select Name,ObjectClass |
+            ConvertTo-Json
+        }
+        else
+        {
+            Write-Host "===== MEMBER SERVER ====="
+
+            Get-LocalGroupMember Administrators |
+            Select Name,ObjectClass |
+            ConvertTo-Json
+        }
 
       register: admins
 
-    - name: Display Local Administrators
-      debug:
+    - debug:
         var: admins.stdout
