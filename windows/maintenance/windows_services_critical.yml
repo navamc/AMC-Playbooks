@@ -18,11 +18,34 @@
             "Schedule"
         )
 
-        Get-Service -Name $Services -ErrorAction SilentlyContinue |
-        Select-Object Name,DisplayName,
-          @{Name="Status";Expression={$_.Status.ToString()}},
-          @{Name="StartType";Expression={$_.StartType.ToString()}} |
-        ConvertTo-Json
+        $Result = @()
+
+        foreach ($Service in $Services)
+        {
+            $S = Get-Service -Name $Service -ErrorAction SilentlyContinue
+
+            if ($S)
+            {
+                $Result += [PSCustomObject]@{
+                    Name        = $S.Name
+                    DisplayName = $S.DisplayName
+                    Status      = $S.Status.ToString()
+                    StartType   = $S.StartType.ToString()
+                }
+            }
+            else
+            {
+                $Result += [PSCustomObject]@{
+                    Name        = $Service
+                    DisplayName = "Not Installed"
+                    Status      = "N/A"
+                    StartType   = "N/A"
+                }
+            }
+        }
+
+        $Result | ConvertTo-Json
+
       register: critical_services
 
     - name: Display critical services
