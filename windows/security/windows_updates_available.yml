@@ -1,0 +1,30 @@
+---
+- name: Check Windows Updates
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Check available Windows updates
+      ansible.windows.win_shell: |
+        $Session = New-Object -ComObject Microsoft.Update.Session
+        $Searcher = $Session.CreateUpdateSearcher()
+        $Result = $Searcher.Search("IsInstalled=0")
+
+        if ($Result.Updates.Count -eq 0)
+        {
+            Write-Output "SYSTEM IS UP TO DATE"
+        }
+        else
+        {
+            $Result.Updates | Select-Object `
+                Title,
+                MsrcSeverity,
+                IsDownloaded |
+            ConvertTo-Json
+        }
+      register: updates
+
+    - name: Display available updates
+      debug:
+        var: updates.stdout
