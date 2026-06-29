@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
 
+<title>AMC Daily Infrastructure Report</title>
+
+<style>
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+    margin:30px;
+}
+
+.container{
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 2px 6px #ccc;
+}
+
+h1{
+    color:#1f4e79;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th{
+    background:#1f4e79;
+    color:white;
+    padding:10px;
+    text-align:left;
+}
+
+td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+}
+
+.ok{
+    color:green;
+    font-weight:bold;
+}
+
+.warn{
+    color:orange;
+    font-weight:bold;
+}
+
+.fail{
+    color:red;
+    font-weight:bold;
+}
+
+.footer{
+    margin-top:30px;
+    font-size:12px;
+    color:gray;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AMC Windows Infrastructure Health Report</h1>
+
+<p>
+
+<b>Date:</b>
+
+{{ ansible_date_time.date }}
+
+{{ ansible_date_time.time }}
+
+</p>
+
+<table>
+
+<tr>
+
+<th>Check</th>
+
+<th>Status</th>
+
+</tr>
+
+{% for item in checks %}
+
+<tr>
+
+<td>{{ item.name }}</td>
+
+<td class="{{ item.color }}">
+
+{{ item.status }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<div class="footer">
+
+Generated automatically by AWX + Ansible
+
+</div>
+
+</div>
+
+</body>
+</html>
