@@ -1,0 +1,19 @@
+---
+- name: Windows Local Administrators Audit
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get Local Administrators Group Members
+      ansible.windows.win_shell: |
+
+        Get-LocalGroupMember -Group "Administrators" |
+        Select-Object Name,ObjectClass,PrincipalSource |
+        ConvertTo-Json
+
+      register: admins
+
+    - name: Display Local Administrators
+      debug:
+        var: admins.stdout
