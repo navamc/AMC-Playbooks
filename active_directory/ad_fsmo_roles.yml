@@ -1,0 +1,21 @@
+---
+- name: Active Directory FSMO Roles
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Get FSMO Roles
+      ansible.windows.win_shell: |
+        Get-ADForest |
+        Select-Object SchemaMaster,DomainNamingMaster |
+        ConvertTo-Json
+
+        Get-ADDomain |
+        Select-Object PDCEmulator,RIDMaster,InfrastructureMaster |
+        ConvertTo-Json
+      register: fsmo
+
+    - name: Display FSMO Roles
+      debug:
+        var: fsmo.stdout
