@@ -1,1 +1,14 @@
+---
+- name: AMC Report Writer
+  hosts: localhost
+  connection: local
+  gather_facts: yes
 
+  vars:
+    report_path: /opt/amc-reports
+
+  tasks:
+
+    - name: Display report path
+      debug:
+        msg: "{{ report_path }}"
