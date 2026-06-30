@@ -1,6 +1,6 @@
 ---
 - name: AMC Report Writer
-  hosts: localhost
+  hosts: ANSIBLE01
   connection: local
   gather_facts: yes
 
