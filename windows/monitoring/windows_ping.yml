@@ -3,7 +3,20 @@
   hosts: windows
   gather_facts: no
 
+  vars:
+    report_dir: /opt/amc-reports/output
+
   tasks:
 
     - name: Ping Windows hosts
       ansible.windows.win_ping:
+      register: ping_result
+
+    - name: Save ping result locally
+      delegate_to: localhost
+      become: false
+
+      copy:
+        dest: "{{ report_dir }}/ping.json"
+        content: |
+          {{ ping_result | to_nice_json }}
