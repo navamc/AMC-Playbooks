@@ -12,3 +12,18 @@
     - name: Show ping result
       debug:
         var: ping_result.ping
+
+    - name: Save ping result as JSON
+      delegate_to: ANSIBLE01
+      become: false
+
+      copy:
+        dest: "/opt/amc-reports/output/json/{{ inventory_hostname }}_ping.json"
+
+        content: |
+          {
+            "hostname": "{{ inventory_hostname }}",
+            "playbook": "windows_ping",
+            "status": "{{ ping_result.ping }}",
+            "datetime": "{{ lookup('pipe','date -Iseconds') }}"
+          }
