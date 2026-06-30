@@ -13,8 +13,17 @@
       debug:
         var: ping_result.ping
 
+    - name: Ensure JSON directory exists
+      delegate_to: localhost
+      become: false
+
+      file:
+        path: /opt/amc-reports/output/json
+        state: directory
+        mode: '0775'
+
     - name: Save ping result as JSON
-      delegate_to: ANSIBLE01
+      delegate_to: localhost
       become: false
 
       copy:
@@ -22,8 +31,8 @@
 
         content: |
           {
-            "hostname": "{{ inventory_hostname }}",
-            "playbook": "windows_ping",
-            "status": "{{ ping_result.ping }}",
-            "datetime": "{{ lookup('pipe','date -Iseconds') }}"
+            "hostname":"{{ inventory_hostname }}",
+            "playbook":"windows_ping",
+            "status":"{{ ping_result.ping }}",
+            "datetime":"{{ lookup('pipe','date -Iseconds') }}"
           }
