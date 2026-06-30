@@ -1,6 +1,6 @@
 ---
 - name: Linux Test
-  hosts: all
+  hosts: ANSIBLE01
   gather_facts: yes
 
   tasks:
