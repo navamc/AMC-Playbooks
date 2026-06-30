@@ -1,0 +1,24 @@
+---
+# ============================================================================
+# AMC Reporting Configuration
+# ============================================================================
+
+report_root: "/opt/amc-reports"
+
+report_output: "{{ report_root }}/output"
+
+report_archive: "{{ report_root }}/archive"
+
+report_css: "{{ report_root }}/css"
+
+report_template: "{{ playbook_dir }}/../reports/templates/daily_health.html.j2"
+
+report_latest: "{{ report_output }}/latest.html"
+
+company_name: "Al Hayat Medical Center"
+
+company_short: "AMC"
+
+environment: "Production"
+
+timezone: "Asia/Qatar"
