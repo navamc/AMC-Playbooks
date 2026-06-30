@@ -5,10 +5,22 @@
   gather_facts: yes
 
   vars:
-    report_path: /opt/amc-reports
+    db: /opt/amc-reports/database/amc_reports.db
 
   tasks:
 
-    - name: Display report path
+    - name: Create new report run
+      shell: |
+        sqlite3 {{ db }} \
+        "INSERT INTO report_runs(workflow_name,status)
+         VALUES('Daily Windows Infrastructure Health Check','Running');"
+
+    - name: Display latest report run
+      shell: |
+        sqlite3 {{ db }} \
+        "SELECT * FROM report_runs ORDER BY id DESC LIMIT 1;"
+      register: report
+
+    - name: Show report
       debug:
-        msg: "{{ report_path }}"
+        var: report.stdout
