@@ -1,1 +1,21 @@
+---
+- name: Linux Test
+  hosts: all
+  gather_facts: yes
 
+  tasks:
+
+    - name: Display hostname
+      debug:
+        msg: "{{ inventory_hostname }}"
+
+    - name: Display operating system
+      debug:
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Display current user
+      command: whoami
+      register: whoami
+
+    - debug:
+        var: whoami.stdout
