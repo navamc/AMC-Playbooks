@@ -3,9 +3,6 @@
   hosts: windows
   gather_facts: no
 
-  vars:
-    db: /opt/amc-reports/database/amc_reports.db
-
   tasks:
 
     - name: Ping Windows hosts
@@ -15,23 +12,3 @@
     - name: Show ping result
       debug:
         var: ping_result.ping
-
-    - name: Save ping result into SQLite
-      delegate_to: ANSIBLE01
-      shell: |
-        sqlite3 {{ db }} "
-        INSERT INTO report_jobs
-        (
-            run_id,
-            hostname,
-            playbook,
-            status
-        )
-        VALUES
-        (
-            (SELECT MAX(id) FROM report_runs),
-            '{{ inventory_hostname }}',
-            'Windows Ping',
-            '{{ ping_result.ping }}'
-        );
-        "
