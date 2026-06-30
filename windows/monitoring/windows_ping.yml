@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars:
-    report_dir: /opt/amc-reports/output
+    db: /opt/amc-reports/database/amc_reports.db
 
   tasks:
 
@@ -12,11 +12,26 @@
       ansible.windows.win_ping:
       register: ping_result
 
-    - name: Save ping result locally
-      delegate_to: localhost
-      become: false
+    - name: Show ping result
+      debug:
+        var: ping_result.ping
 
-      copy:
-        dest: "{{ report_dir }}/ping.json"
-        content: |
-          {{ ping_result | to_nice_json }}
+    - name: Save ping result into SQLite
+      delegate_to: ANSIBLE01
+      shell: |
+        sqlite3 {{ db }} "
+        INSERT INTO report_jobs
+        (
+            run_id,
+            hostname,
+            playbook,
+            status
+        )
+        VALUES
+        (
+            (SELECT MAX(id) FROM report_runs),
+            '{{ inventory_hostname }}',
+            'Windows Ping',
+            '{{ ping_result.ping }}'
+        );
+        "
