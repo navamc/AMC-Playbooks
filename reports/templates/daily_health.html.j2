@@ -1,66 +1,80 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="UTF-8">
 
-<title>AMC Daily Infrastructure Report</title>
+<title>{{ report_title }}</title>
 
 <style>
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f6f8;
-    margin:30px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:#f4f4f4;
+
+    margin:40px;
+
 }
 
 .container{
+
     background:white;
-    padding:25px;
-    border-radius:8px;
-    box-shadow:0 2px 6px #ccc;
+
+    padding:30px;
+
+    border-radius:10px;
+
 }
 
 h1{
-    color:#1f4e79;
+
+    color:#0d6efd;
+
 }
 
 table{
+
     width:100%;
+
     border-collapse:collapse;
-    margin-top:20px;
+
 }
 
 th{
-    background:#1f4e79;
+
+    background:#0d6efd;
+
     color:white;
+
     padding:10px;
-    text-align:left;
+
 }
 
 td{
+
     padding:8px;
+
     border-bottom:1px solid #ddd;
+
 }
 
-.ok{
+.success{
+
     color:green;
+
     font-weight:bold;
+
 }
 
-.warn{
-    color:orange;
-    font-weight:bold;
-}
+.failed{
 
-.fail{
     color:red;
-    font-weight:bold;
-}
 
-.footer{
-    margin-top:30px;
-    font-size:12px;
-    color:gray;
+    font-weight:bold;
+
 }
 
 </style>
@@ -71,37 +85,65 @@ td{
 
 <div class="container">
 
-<h1>AMC Windows Infrastructure Health Report</h1>
+<h1>{{ company }}</h1>
+
+<h2>{{ report_title }}</h2>
+
+<hr>
+
+<h3>Workflow Information</h3>
 
 <p>
 
-<b>Date:</b>
+<b>Workflow:</b> {{ workflow.workflow_name }}
 
-{{ ansible_date_time.date }}
+<br>
 
-{{ ansible_date_time.time }}
+<b>Status:</b>
+
+<span class="{{ workflow.status }}">
+
+{{ workflow.status }}
+
+</span>
+
+<br>
+
+<b>Run Date:</b>
+
+{{ workflow.run_date }}
 
 </p>
+
+<h3>Job Summary</h3>
 
 <table>
 
 <tr>
 
-<th>Check</th>
+<th>Host</th>
+
+<th>Playbook</th>
 
 <th>Status</th>
 
 </tr>
 
-{% for item in checks %}
+{% for job in jobs %}
 
 <tr>
 
-<td>{{ item.name }}</td>
+<td>{{ job.hostname }}</td>
 
-<td class="{{ item.color }}">
+<td>{{ job.playbook }}</td>
 
-{{ item.status }}
+<td>
+
+<span class="{{ job.status }}">
+
+{{ job.status }}
+
+</span>
 
 </td>
 
@@ -111,13 +153,8 @@ td{
 
 </table>
 
-<div class="footer">
-
-Generated automatically by AWX + Ansible
-
-</div>
-
 </div>
 
 </body>
+
 </html>
