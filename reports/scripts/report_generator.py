@@ -30,6 +30,16 @@ class ReportGenerator:
 
         return self.cursor.fetchone()
 
+    def get_run(self, run_id):
+
+        self.cursor.execute("""
+            SELECT *
+            FROM report_runs
+            WHERE id=?
+        """, (run_id,))
+
+        return self.cursor.fetchone()
+
     def get_jobs(self, run_id):
 
         self.cursor.execute("""
@@ -37,6 +47,17 @@ class ReportGenerator:
             FROM report_jobs
             WHERE run_id=?
             ORDER BY id
+        """, (run_id,))
+
+        return self.cursor.fetchall()
+
+    def get_host_summary(self, run_id):
+
+        self.cursor.execute("""
+            SELECT *
+            FROM host_summary
+            WHERE run_id=?
+            ORDER BY hostname
         """, (run_id,))
 
         return self.cursor.fetchall()

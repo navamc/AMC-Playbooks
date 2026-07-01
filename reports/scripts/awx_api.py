@@ -51,16 +51,40 @@ class AWXAPI:
 
     def get_job_events(self, job_id):
 
-        response = requests.get(
-            f"{self.base_url}/api/v2/jobs/{job_id}/job_events/",
-            headers=self.headers,
-            verify=AWX_VERIFY_SSL,
-            timeout=30
-        )
+        url = f"{self.base_url}/api/v2/jobs/{job_id}/job_events/?page_size=200"
 
-        response.raise_for_status()
+        all_events = []
 
-        return response.json()
+        while url:
+
+            response = requests.get(
+                url,
+                headers=self.headers,
+                verify=AWX_VERIFY_SSL,
+                timeout=30
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            all_events.extend(data["results"])
+
+            if data["next"]:
+
+                if data["next"].startswith("http"):
+
+                    url = data["next"]
+
+                else:
+
+                    url = self.base_url + data["next"]
+
+            else:
+
+                url = None
+
+        return all_events
 
     def get_job_details(self, job_id):
 

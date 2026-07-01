@@ -15,13 +15,15 @@ from report_generator import ReportGenerator
 
 class HTMLReport:
 
-    def generate(self):
+    def generate(self, run_id):
 
         report = ReportGenerator()
 
-        workflow = report.get_latest_run()
+        workflow = report.get_run(run_id)
 
-        jobs = report.get_jobs(workflow["id"])
+        jobs = report.get_jobs(run_id)
+
+        hosts = report.get_host_summary(run_id)
 
         env = Environment(
             loader=FileSystemLoader("../templates")
@@ -33,7 +35,8 @@ class HTMLReport:
             company=COMPANY_NAME,
             report_title=REPORT_TITLE,
             workflow=workflow,
-            jobs=jobs
+            jobs=jobs,
+            hosts=hosts
         )
 
         os.makedirs(OUTPUT_HTML, exist_ok=True)

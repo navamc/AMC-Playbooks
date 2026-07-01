@@ -5,6 +5,7 @@ Main Program
 
 from awx_api import AWXAPI
 from database import Database
+from health_analyzer import HealthAnalyzer
 from html_report import HTMLReport
 
 print("-------------------------------------")
@@ -89,12 +90,29 @@ for node in nodes["results"]:
 
     status = details.get("status", "Unknown")
 
-    db.save_job(
+    db_job_id = db.save_job(
         run_id,
         str(hostname),
         playbook,
         status
     )
+
+    events = api.get_job_events(job_id)
+
+    for event in events:
+
+        if not event["host_name"]:
+            continue
+
+        db.save_host_result(
+            run_id=run_id,
+            job_id=db_job_id,
+            hostname=event["host_name"],
+            task_name=event["task"],
+            event=event["event"],
+            changed=int(event["changed"]),
+            failed=int(event["failed"])
+        )
 
 print()
 
@@ -102,11 +120,23 @@ db.close()
 
 print()
 
+print("Analyzing Host Health...")
+
+health = HealthAnalyzer()
+
+health.analyze(run_id)
+
+health.close()
+
+print("Health Analysis Completed")
+
+print()
+
 print("Generating HTML Report...")
 
 html = HTMLReport()
 
-filename = html.generate()
+filename = html.generate(run_id)
 
 print("HTML Report Created")
 
